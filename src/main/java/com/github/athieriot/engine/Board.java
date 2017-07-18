@@ -30,11 +30,10 @@ public class Board {
         fill(board, southStartIdx, southStartIdx + houses, seeds);
     }
 
-    //TODO: Should not allow moves from an empty house
     public int move(int player, int houseNbr) {
-        if (houseNbr < 1 || houseNbr > houses) { throw new GameException("This is a party with " + houses + " houses"); }
-
         int houseIdx = fromHouseNbrToIdx(player, houseNbr);
+
+        checkLegalMoves(houseNbr, houseIdx);
         pickSeeds(houseIdx);
 
         int startIdx = houseIdx + 1;
@@ -46,6 +45,11 @@ public class Board {
         }
 
         return lastIdx;
+    }
+
+    private void checkLegalMoves(int houseNbr, int houseIdx) {
+        if (houseNbr < 1 || houseNbr > houses) { throw new GameException("This is a party with " + houses + " houses"); }
+        else if (board[houseIdx] == 0) { throw new GameException("Empty house. Not a valid move"); }
     }
 
     private int fromHouseNbrToIdx(int player, int houseNbr) {
@@ -73,49 +77,36 @@ public class Board {
         return i - 1;
     }
 
-    public boolean capture(int player, int idx) {
+    public void capture(int player, int idx) {
         int opponentIdx = opponentIdx(idx);
-        int playerStoreIdx = player == 1 ? southStoreIdx : northStoreIdx;
+        int playerStoreIdx = playerStoreIdx(player);
+        int treasure = board[idx] + board[opponentIdx];
 
-        if (captureConditions(player, idx, opponentIdx)) {
-            int treasure = board[idx] + board[opponentIdx];
-
-            synchronized (board) {
-                board[idx] = 0;
-                board[opponentIdx] = 0;
-                board[playerStoreIdx] = board[playerStoreIdx] + treasure;
-            }
-
-            return true;
+        synchronized (board) {
+            board[idx] = 0;
+            board[opponentIdx] = 0;
+            board[playerStoreIdx] = board[playerStoreIdx] + treasure;
         }
-
-        return false;
     }
 
-    //TODO: Move caputre conditions in Engine
-    private boolean captureConditions(int player, int idx, int opponentIdx) {
-        return isPlayersHouse(player, idx)
-                && board[idx] == 1
-                && board[opponentIdx] > 0;
+    public boolean isPlayersHouse(int player, int idx) {
+        return player == 1 && idx >= southStartIdx && idx <= southStartIdx + houses - 1
+                || player == 2 && idx >= northStartIdx && idx <= northStartIdx + houses - 1;
     }
 
-    public boolean isPlayersHouse(int player, int houseIdx) {
-        return player == 1 && houseIdx >= southStartIdx && houseIdx <= southStartIdx + houses - 1
-                || player == 2 && houseIdx >= northStartIdx && houseIdx <= northStartIdx + houses - 1;
+    public int playerStoreIdx(int player) {
+        return player == 1 ? southStoreIdx : northStoreIdx;
     }
 
-    private int opponentIdx(int idx) {
-        if (idx != northStoreIdx && idx != southStoreIdx) {
-            return (idx - (houses * 2)) * -1;
-        }
+    public int opponentIdx(int idx) {
+        if (idx == northStoreIdx) { return southStoreIdx; }
+        else if (idx == southStoreIdx) { return northStoreIdx; }
 
-        return idx;
+        return (idx - (houses * 2)) * -1;
     }
 
-    public int score(int player) {
-        int playerStoreIdx = player == 1 ? southStoreIdx : northStoreIdx;
-
-        return board[playerStoreIdx];
+    public int seeds(int idx) {
+        return board[idx];
     }
 
     @Override

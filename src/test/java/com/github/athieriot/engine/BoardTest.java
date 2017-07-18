@@ -1,9 +1,9 @@
-package com.github.athieriot;
+package com.github.athieriot.engine;
 
-import com.github.athieriot.engine.Board;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class BoardTest {
 
@@ -56,6 +56,19 @@ public class BoardTest {
     }
 
     @Test
+    public void test_illegal_move() {
+        Board board = new Board(6, 6);
+        assertThatThrownBy(() -> board.move(1, 8))
+                .isInstanceOf(GameException.class)
+                .hasMessage("This is a party with 6 houses");
+
+        board.move(1, 1);
+        assertThatThrownBy(() -> board.move(1, 1))
+                .isInstanceOf(GameException.class)
+                .hasMessage("Empty house. Not a valid move");
+    }
+
+    @Test
     public void test_some_moves_from_north_zone() {
         Board board = new Board(6, 6);
 
@@ -83,14 +96,24 @@ public class BoardTest {
                 "2\t \t \t \t \t3\n\r" +
                 "0\t1\t7\t6\t6\t1");
 
-        boolean captured = board.capture(1, lastIdx);
+        board.capture(1, lastIdx);
 
-        assertThat(captured).isTrue();
-        assertThat(board.score(1)).isEqualTo(9);
+        assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(9);
         assertThat(board.toString()).isEqualTo(
                 "6\t0\t5\t6\t0\t0\t\n\r" +
                 "2\t \t \t \t \t9\n\r" +
                 "0\t1\t7\t6\t6\t0");
+    }
+
+    @Test
+    public void test_opponent_idx() {
+        Board board = new Board(6, 6);
+
+        assertThat(board.opponentIdx(0)).isEqualTo(12);
+        assertThat(board.opponentIdx(5)).isEqualTo(7);
+        assertThat(board.opponentIdx(3)).isEqualTo(9);
+        assertThat(board.opponentIdx(6)).isEqualTo(13);
+        assertThat(board.opponentIdx(13)).isEqualTo(6);
     }
 
     @Test
@@ -100,6 +123,6 @@ public class BoardTest {
         board.move(1, 1);
         board.move(1, 3);
 
-        assertThat(board.score(1)).isEqualTo(2);
+        assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(2);
     }
 }

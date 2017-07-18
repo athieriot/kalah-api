@@ -23,13 +23,22 @@ public class Engine {
         checkPlayersTurn(player);
 
         int lastIdx = board.move(player, house);
-        boolean captured = board.capture(player, lastIdx);
+
+        if (captureConditions(player, lastIdx)) {
+            board.capture(player, lastIdx);
+        }
 
         // Check end of game
         // Count all remaining seeds in score
 
-        //TODO: Only toggle if last seed not in owned store
-        togglePlayersTurn();
+        if (lastIdx != board.playerStoreIdx(player)) {
+            //TODO: Add some sort of loggin maybe?
+            togglePlayersTurn();
+        }
+    }
+
+    public int score(int player) {
+        return board.seeds(board.playerStoreIdx(player));
     }
 
     private void checkPlayersTurn(int player) {
@@ -43,5 +52,13 @@ public class Engine {
         } else {
             playerTurn = 1;
         }
+    }
+
+    private boolean captureConditions(int player, int idx) {
+        int opponentIdx = board.opponentIdx(idx);
+
+        return board.isPlayersHouse(player, idx)
+                && board.seeds(idx) == 1
+                && board.seeds(opponentIdx) > 0;
     }
 }
