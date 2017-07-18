@@ -39,9 +39,9 @@ public class EngineTest {
     @Test
     public void test_invalid_play_illegal_move() {
         Engine engine = new Engine();
-        assertThatThrownBy(() -> engine.play(1, 10))
+        assertThatThrownBy(() -> engine.play(1, 8))
                 .isInstanceOf(GameException.class)
-                .hasMessage("You can't sow from there");
+                .hasMessage("This is a party with 6 houses");
     }
 
     @Test
