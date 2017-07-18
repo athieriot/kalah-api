@@ -32,5 +32,14 @@ public class Engine {
         }
 
         board.move(player, house);
+        togglePlayerTurn();
+    }
+
+    private void togglePlayerTurn() {
+        if (playerTurn == 1) {
+            playerTurn = 2;
+        } else {
+            playerTurn = 1;
+        }
     }
 }

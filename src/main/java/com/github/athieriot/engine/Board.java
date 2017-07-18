@@ -30,6 +30,7 @@ public class Board {
         fill(board, southStartIdx, southStartIdx + houses, seeds);
     }
 
+    //TODO: Is a move from an empty house legal?
     public boolean legalMove(int player, int house) {
         return player == 1 && house >= southStartIdx && house <= southStartIdx + houses - 1
                 || player == 2 && house >= northStartIdx && house <= northStartIdx + houses - 1;
@@ -38,6 +39,18 @@ public class Board {
     public void move(int player, int house) {
         if (!legalMove(player, house)) {
             throw new GameException("You can't sow from there");
+        }
+
+        int opponentStoreIdx = player == 1 ? northStoreIdx : southStoreIdx;
+        int hand = board[house];
+        board[house] = 0;
+
+
+        for (int i = house + 1; i < board.length && hand > 0; i++) {
+            if (i != opponentStoreIdx) {
+                board[i] = board[i] + 1;
+                hand = hand - 1;
+            }
         }
     }
 
