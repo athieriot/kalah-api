@@ -28,4 +28,15 @@ public class BoardTest {
         assertThat(board.legalMove(2, 13)).isFalse();// Player 2 store
         assertThat(board.legalMove(3, 2)).isFalse();// There is no player 3
     }
+
+    @Test
+    public void test_a_game() {
+        Board board = new Board(6, 6);
+
+        System.out.println(board.toString());
+        board.move(1, 0);
+        System.out.println(board.toString());
+        board.move(2, 10);
+        System.out.println(board.toString());
+    }
 }

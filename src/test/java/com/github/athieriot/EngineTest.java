@@ -43,4 +43,13 @@ public class EngineTest {
                 .isInstanceOf(GameException.class)
                 .hasMessage("You can't sow from there");
     }
+
+    @Test
+    public void test_play_toggle_player_turn() {
+        Engine engine = new Engine();
+        int firstPlayer = engine.playerTurn();
+
+        engine.play(engine.playerTurn(), 1);
+        assertThat(engine.playerTurn()).isNotEqualTo(firstPlayer);
+    }
 }
