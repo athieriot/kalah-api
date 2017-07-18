@@ -1,7 +1,5 @@
-package com.github.athieriot;
+package com.github.athieriot.engine;
 
-import com.github.athieriot.engine.Engine;
-import com.github.athieriot.engine.GameException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Repeat;
@@ -37,19 +35,32 @@ public class EngineTest {
     }
 
     @Test
-    public void test_invalid_play_illegal_move() {
-        Engine engine = new Engine();
-        assertThatThrownBy(() -> engine.play(1, 8))
-                .isInstanceOf(GameException.class)
-                .hasMessage("This is a party with 6 houses");
-    }
-
-    @Test
     public void test_play_toggle_player_turn() {
         Engine engine = new Engine();
         int firstPlayer = engine.playerTurn();
 
-        engine.play(engine.playerTurn(), 1);
+        engine.play(engine.playerTurn(), 1); // Last move is the store. Free move !
+        assertThat(engine.playerTurn()).isEqualTo(firstPlayer);
+
+        engine.play(engine.playerTurn(), 2);
         assertThat(engine.playerTurn()).isNotEqualTo(firstPlayer);
+    }
+
+    @Test
+    public void test_capture_from_player_1() {
+        Engine engine = new Engine(6, 4);
+
+        engine.play(1, 6);
+        engine.play(2, 2);
+        engine.play(2, 5);
+        engine.play(1, 2);
+        engine.play(1, 6);
+
+        assertThat(engine.score(1)).isEqualTo(3);
+        assertThat(engine.score(2)).isEqualTo(2);
+
+        engine.play(1, 1); // Capture move
+
+        assertThat(engine.score(1)).isEqualTo(9);
     }
 }
