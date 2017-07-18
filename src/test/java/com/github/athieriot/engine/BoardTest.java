@@ -1,6 +1,9 @@
 package com.github.athieriot.engine;
 
+import com.github.athieriot.exception.IllegalMoveException;
 import org.junit.Test;
+
+import java.security.InvalidParameterException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -59,12 +62,12 @@ public class BoardTest {
     public void test_illegal_move() {
         Board board = new Board(6, 6);
         assertThatThrownBy(() -> board.move(1, 8))
-                .isInstanceOf(GameException.class)
+                .isInstanceOf(InvalidParameterException.class)
                 .hasMessage("This is a party with 6 houses");
 
         board.move(1, 1);
         assertThatThrownBy(() -> board.move(1, 1))
-                .isInstanceOf(GameException.class)
+                .isInstanceOf(IllegalMoveException.class)
                 .hasMessage("Empty house. Not a valid move");
     }
 
