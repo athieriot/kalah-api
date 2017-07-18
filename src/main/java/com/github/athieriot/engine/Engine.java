@@ -22,11 +22,13 @@ public class Engine {
     public void play(int player, int house) {
         checkPlayersTurn(player);
 
-        board.move(player, house);
+        int lastIdx = board.move(player, house);
+        boolean captured = board.capture(player, lastIdx);
 
-        // Check if score and bank
         // Check end of game
+        // Count all remaining seeds in score
 
+        //TODO: Only toggle if last seed not in owned store
         togglePlayersTurn();
     }
 
