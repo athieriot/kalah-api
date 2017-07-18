@@ -1,5 +1,8 @@
 package com.github.athieriot.engine;
 
+import com.github.athieriot.exception.IllegalMoveException;
+
+import java.security.InvalidParameterException;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.fill;
@@ -52,8 +55,8 @@ public class Board {
     }
 
     private void checkLegalMoves(int houseNbr, int houseIdx) {
-        if (houseNbr < 1 || houseNbr > houses) { throw new GameException("This is a party with " + houses + " houses"); }
-        else if (board[houseIdx] == 0) { throw new GameException("Empty house. Not a valid move"); }
+        if (houseNbr < 1 || houseNbr > houses) { throw new InvalidParameterException("This is a party with " + houses + " houses"); }
+        else if (board[houseIdx] == 0) { throw new IllegalMoveException("Empty house. Not a valid move"); }
     }
 
     private int fromHouseNbrToIdx(int player, int houseNbr) {
@@ -128,6 +131,10 @@ public class Board {
         int end = start + houses;
 
         return range(start, end);
+    }
+
+    public int[] list() {
+        return board;
     }
 
     @Override

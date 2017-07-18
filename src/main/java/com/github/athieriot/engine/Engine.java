@@ -1,13 +1,23 @@
 package com.github.athieriot.engine;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.athieriot.exception.IllegalMoveException;
+import com.github.athieriot.exception.GameOverException;
+
+import java.security.InvalidParameterException;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.UUID;
 
 import static java.util.Arrays.stream;
 
 //TODO: Implement the Pie Rule?
 public class Engine {
 
+    private final UUID id = UUID.randomUUID();
+
     private final Board board;
+
     private int playerTurn;
 
     private boolean gameOver = false;
@@ -17,7 +27,7 @@ public class Engine {
     }
 
     public Engine(int houses, int seeds) {
-        this(houses, seeds, new SecureRandom().nextInt(1) + 1);
+        this(houses, seeds, new SecureRandom().nextInt(2) + 1);
     }
 
     public Engine(int houses, int seeds, int firstPlayer) {
@@ -25,8 +35,31 @@ public class Engine {
         this.playerTurn = firstPlayer;
     }
 
+    @JsonProperty
+    public UUID id() {
+        return id;
+    }
+
+    @JsonProperty
+    public int[] board() {
+        return board.list();
+    }
+
+    @JsonProperty
     public int playerTurn() {
         return playerTurn;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    @JsonProperty
+    public HashMap<Integer, Integer> scores() {
+        return new HashMap<Integer, Integer>() {{
+            put(1, score(1));
+            put(2, score(2));
+        }};
     }
 
     public void play(int player, int... houses) {
@@ -34,6 +67,7 @@ public class Engine {
     }
 
     //TODO: Add Javadoc
+    //TODO: Record individual steps?
     public void play(int player, int house) {
         checkValidPlay(player);
 
@@ -49,7 +83,6 @@ public class Engine {
         }
 
         if (lastIdx != board.playerStoreIdx(player)) {
-            //TODO: Add some sort of login maybe?
             togglePlayersTurn();
         }
     }
@@ -59,22 +92,18 @@ public class Engine {
         return board.seeds(board.playerStoreIdx(player));
     }
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public int winner() {
-        if (!gameOver) { throw new GameException("Game not finished yet"); }
-
+    @JsonProperty
+    public Integer winner() {
+        if (!gameOver) { return null; }
         else if (score(1) > score(2)) { return 1; }
         else if (score(1) < score(2)) { return 2; }
         else { return 0; }
     }
 
     private void checkValidPlay(int player) {
-        if (gameOver) { throw new GameException("The Game is over !"); }
-        else if (player < 1 || player > 2) {  throw new GameException("This is 2 players game only"); }
-        else if (player != playerTurn) { throw new GameException("Not your turn yet"); }
+        if (gameOver) { throw new GameOverException("The Game is over !"); }
+        else if (player < 1 || player > 2) {  throw new InvalidParameterException("This is 2 players game only"); }
+        else if (player != playerTurn) { throw new IllegalMoveException("Not your turn yet"); }
     }
 
     private void togglePlayersTurn() {

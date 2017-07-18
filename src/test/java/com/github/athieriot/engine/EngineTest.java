@@ -1,9 +1,13 @@
 package com.github.athieriot.engine;
 
+import com.github.athieriot.exception.GameOverException;
+import com.github.athieriot.exception.IllegalMoveException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.security.InvalidParameterException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,7 +26,7 @@ public class EngineTest {
     public void test_invalid_play_extra_user() {
         Engine engine = new Engine();
         assertThatThrownBy(() -> engine.play(3, 2))
-                .isInstanceOf(GameException.class)
+                .isInstanceOf(InvalidParameterException.class)
                 .hasMessage("This is 2 players game only");
     }
 
@@ -30,7 +34,7 @@ public class EngineTest {
     public void test_invalid_play_not_players_turn() {
         Engine engine = new Engine();
         assertThatThrownBy(() -> engine.play(engine.playerTurn() == 1 ? 2 : 1, 2))
-                .isInstanceOf(GameException.class)
+                .isInstanceOf(IllegalMoveException.class)
                 .hasMessage("Not your turn yet");
     }
 
@@ -67,9 +71,7 @@ public class EngineTest {
     @Test
     public void test_winner_before_end() {
         Engine engine = new Engine();
-        assertThatThrownBy(engine::winner)
-                .isInstanceOf(GameException.class)
-                .hasMessage("Game not finished yet");
+        assertThat(engine.winner()).isNull();
     }
 
     @Test
@@ -113,7 +115,7 @@ public class EngineTest {
         assertThat(engine.winner()).isEqualTo(2);
 
         assertThatThrownBy(() -> engine.play(1, 1))
-                .isInstanceOf(GameException.class)
+                .isInstanceOf(GameOverException.class)
                 .hasMessage("The Game is over !");
     }
 }
