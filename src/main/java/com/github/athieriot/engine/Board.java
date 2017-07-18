@@ -13,6 +13,8 @@ public class Board {
     private int seeds;
     private int houses;
 
+    private int hand = 0;
+
     private int[] board;
 
     public Board(int seeds, int houses) {
@@ -36,22 +38,39 @@ public class Board {
                 || player == 2 && house >= northStartIdx && house <= northStartIdx + houses - 1;
     }
 
-    public void move(int player, int house) {
-        if (!legalMove(player, house)) {
-            throw new GameException("You can't sow from there");
+    public int move(int player, int house) {
+        if (!legalMove(player, house)) { throw new GameException("You can't sow from there"); }
+
+        pickSeeds(house);
+
+        int startIdx = house + 1;
+        int lastIdx = startIdx;
+
+        while (hand > 0) {
+            lastIdx = sowSeedsFrom(player, startIdx);
+            startIdx = 0;
         }
 
-        int opponentStoreIdx = player == 1 ? northStoreIdx : southStoreIdx;
-        int hand = board[house];
+        return lastIdx;
+    }
+
+    private void pickSeeds(int house) {
+        hand = board[house];
         board[house] = 0;
+    }
 
+    private int sowSeedsFrom(int player, int startIdx) {
+        int i;
+        int opponentStoreIdx = player == 1 ? northStoreIdx : southStoreIdx;
 
-        for (int i = house + 1; i < board.length && hand > 0; i++) {
+        for(i = startIdx; i < board.length && hand > 0; i++) {
             if (i != opponentStoreIdx) {
                 board[i] = board[i] + 1;
                 hand = hand - 1;
             }
         }
+
+        return i - 1;
     }
 
     @Override
