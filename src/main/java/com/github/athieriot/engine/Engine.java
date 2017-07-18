@@ -4,9 +4,8 @@ import java.security.SecureRandom;
 
 public class Engine {
 
+    private final Board board;
     private int playerTurn = new SecureRandom().nextInt(1) + 1;
-
-    private Board board;
 
     public Engine() {
         this(6, 6);
@@ -16,23 +15,27 @@ public class Engine {
         this.board = new Board(houses, seeds);
     }
 
-    public Board board() {
-        return board;
-    }
-
     public int playerTurn() {
         return playerTurn;
     }
 
     public void play(int player, int house) {
-        if (player < 1 || player > 2) {  throw new GameException("This is 2 players game only"); }
-        else if (player != playerTurn) { throw new GameException("Not your turn yet"); }
+        checkPlayersTurn(player);
 
         board.move(player, house);
-        togglePlayerTurn();
+
+        // Check if score and bank
+        // Check end of game
+
+        togglePlayersTurn();
     }
 
-    private void togglePlayerTurn() {
+    private void checkPlayersTurn(int player) {
+        if (player < 1 || player > 2) {  throw new GameException("This is 2 players game only"); }
+        else if (player != playerTurn) { throw new GameException("Not your turn yet"); }
+    }
+
+    private void togglePlayersTurn() {
         if (playerTurn == 1) {
             playerTurn = 2;
         } else {

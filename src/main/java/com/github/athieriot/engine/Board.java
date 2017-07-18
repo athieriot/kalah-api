@@ -4,46 +4,36 @@ import static java.util.Arrays.fill;
 
 public class Board {
 
-    private int southStartIdx;
-    private int northStartIdx;
+    private final int houses;
+    private final int seeds;
 
-    private int southStoreIdx;
-    private int northStoreIdx;
-
-    private int seeds;
-    private int houses;
+    private final int southStoreIdx;
+    private final int northStoreIdx;
 
     private int hand = 0;
-
-    private int[] board;
+    private final int[] board;
 
     public Board(int seeds, int houses) {
         this.houses = houses;
         this.seeds = seeds;
+        this.board = new int[(houses * 2) + 2];
+        this.southStoreIdx = houses;
+        this.northStoreIdx = (houses * 2) + 1;
 
-        board = new int[(houses * 2) + 2];
-        southStartIdx = 0;
-        northStartIdx = houses + 1;
-
-        southStoreIdx = houses;
-        northStoreIdx = (houses * 2) + 1;
+        int southStartIdx = 0;
+        int northStartIdx = houses + 1;
 
         fill(board, northStartIdx, northStartIdx + houses, seeds);
         fill(board, southStartIdx, southStartIdx + houses, seeds);
     }
 
-    //TODO: Is a move from an empty house legal?
-    public boolean legalMove(int player, int house) {
-        return player == 1 && house >= southStartIdx && house <= southStartIdx + houses - 1
-                || player == 2 && house >= northStartIdx && house <= northStartIdx + houses - 1;
-    }
+    public int move(int player, int houseNbr) {
+        if (houseNbr < 1 || houseNbr > houses) { throw new GameException("This is a party with 6 houses"); }
 
-    public int move(int player, int house) {
-        if (!legalMove(player, house)) { throw new GameException("You can't sow from there"); }
+        int houseIdx = fromHouseNbrToIdx(player, houseNbr);
+        pickSeeds(houseIdx);
 
-        pickSeeds(house);
-
-        int startIdx = house + 1;
+        int startIdx = houseIdx + 1;
         int lastIdx = startIdx;
 
         while (hand > 0) {
@@ -54,9 +44,15 @@ public class Board {
         return lastIdx;
     }
 
+    private int fromHouseNbrToIdx(int player, int houseNbr) {
+        return player == 1 ? houseNbr - 1 : houseNbr + houses;
+    }
+
     private void pickSeeds(int house) {
-        hand = board[house];
-        board[house] = 0;
+        synchronized (board) {
+            hand = board[house];
+            board[house] = 0;
+        }
     }
 
     private int sowSeedsFrom(int player, int startIdx) {
