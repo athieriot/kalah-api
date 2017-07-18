@@ -47,8 +47,8 @@ public class EngineTest {
     }
 
     @Test
-    public void test_capture_from_player_1() {
-        Engine engine = new Engine(6, 4);
+    public void test_capture_scenario() {
+        Engine engine = new Engine(6, 4, 1);
 
         engine.play(1, 6);
         engine.play(2, 2);
@@ -62,5 +62,58 @@ public class EngineTest {
         engine.play(1, 1); // Capture move
 
         assertThat(engine.score(1)).isEqualTo(9);
+    }
+
+    @Test
+    public void test_winner_before_end() {
+        Engine engine = new Engine();
+        assertThatThrownBy(engine::winner)
+                .isInstanceOf(GameException.class)
+                .hasMessage("Game not finished yet");
+    }
+
+    @Test
+    public void test_end_game() {
+        Engine engine = new Engine(6, 6, 1);
+
+        engine.play(1, 4);
+        engine.play(2, 6);
+        engine.play(1, 5);
+        engine.play(2, 6);
+        engine.play(2, 2);
+        engine.play(1, 6);
+        engine.play(2, 1);
+        engine.play(1, 4);
+        engine.play(2, 4);
+        engine.play(1, 3);
+        engine.play(2, 4);
+        engine.play(1, 6, 5, 6, 2);
+        engine.play(2, 3);
+        engine.play(1, 5);
+        engine.play(1, 3);
+        engine.play(2, 5, 4, 5, 6);
+        engine.play(1, 5, 4, 1);
+        engine.play(2, 6, 1, 6, 5, 6, 3, 6, 4, 6, 5, 6, 2);
+        engine.play(1, 5, 2, 3, 5, 4, 6);
+        engine.play(2, 6, 5, 6, 4);
+        engine.play(1, 5, 6, 4);
+        engine.play(2, 3);
+        engine.play(1, 2);
+        engine.play(2, 5);
+        engine.play(2, 6);
+        engine.play(2, 4);
+        engine.play(1, 3);
+        engine.play(2, 5);
+        engine.play(1, 5);
+        engine.play(2, 6);
+
+        assertThat(engine.isGameOver()).isTrue();
+        assertThat(engine.score(1)).isEqualTo(33);
+        assertThat(engine.score(2)).isEqualTo(39);
+        assertThat(engine.winner()).isEqualTo(2);
+
+        assertThatThrownBy(() -> engine.play(1, 1))
+                .isInstanceOf(GameException.class)
+                .hasMessage("The Game is over !");
     }
 }
