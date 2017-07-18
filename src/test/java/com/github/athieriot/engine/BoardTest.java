@@ -125,4 +125,25 @@ public class BoardTest {
 
         assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(2);
     }
+
+    @Test
+    public void test_seeds_left() {
+        Board board = new Board(6, 6);
+
+        board.move(1, 6);
+        board.move(2, 2);
+
+        assertThat(board.seedsLeftFor(1)).isEqualTo(32);
+        assertThat(board.seedsLeftFor(2)).isEqualTo(38);
+    }
+
+    @Test
+    public void test_collect_all_seeds() {
+        Board board = new Board(6, 6);
+
+        board.collectSeeds(1);
+
+        assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(36);
+        assertThat(board.seedsLeftFor(1)).isEqualTo(0);
+    }
 }

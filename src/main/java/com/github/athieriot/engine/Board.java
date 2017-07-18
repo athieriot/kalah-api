@@ -1,6 +1,9 @@
 package com.github.athieriot.engine;
 
+import java.util.stream.IntStream;
+
 import static java.util.Arrays.fill;
+import static java.util.stream.IntStream.range;
 
 public class Board {
 
@@ -30,6 +33,7 @@ public class Board {
         fill(board, southStartIdx, southStartIdx + houses, seeds);
     }
 
+    //TODO: Does it worth removing "player" mention in the board for "zone" (North/South)?
     /* package */ int move(int player, int houseNbr) {
         int houseIdx = fromHouseNbrToIdx(player, houseNbr);
 
@@ -89,9 +93,19 @@ public class Board {
         }
     }
 
+    /* package */ void collectSeeds(int player) {
+        board[playerStoreIdx(player)] = board[playerStoreIdx(player)] + seedsLeftFor(player);
+
+        streamOf(player).forEach(i -> board[i] = 0);
+    }
+
     /* package */ boolean isPlayersHouse(int player, int idx) {
         return player == 1 && idx >= southStartIdx && idx <= southStartIdx + houses - 1
                 || player == 2 && idx >= northStartIdx && idx <= northStartIdx + houses - 1;
+    }
+
+    /* package */ int seedsLeftFor(int player) {
+        return streamOf(player).map(i -> board[i]).sum();
     }
 
     /* package */ int playerStoreIdx(int player) {
@@ -107,6 +121,13 @@ public class Board {
 
     /* package */ int seeds(int idx) {
         return board[idx];
+    }
+
+    private IntStream streamOf(int player) {
+        int start = player == 1 ? southStartIdx : northStartIdx;
+        int end = start + houses;
+
+        return range(start, end);
     }
 
     @Override
