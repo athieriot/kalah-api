@@ -16,7 +16,7 @@ public class Board {
     private int hand = 0;
     private final int[] board;
 
-    public Board(int houses, int seeds) {
+    /* package */ Board(int houses, int seeds) {
         this.houses = houses;
         this.seeds = seeds;
         this.board = new int[(houses * 2) + 2];
@@ -30,7 +30,7 @@ public class Board {
         fill(board, southStartIdx, southStartIdx + houses, seeds);
     }
 
-    public int move(int player, int houseNbr) {
+    /* package */ int move(int player, int houseNbr) {
         int houseIdx = fromHouseNbrToIdx(player, houseNbr);
 
         checkLegalMoves(houseNbr, houseIdx);
@@ -77,7 +77,7 @@ public class Board {
         return i - 1;
     }
 
-    public void capture(int player, int idx) {
+    /* package */ void capture(int player, int idx) {
         int opponentIdx = opponentIdx(idx);
         int playerStoreIdx = playerStoreIdx(player);
         int treasure = board[idx] + board[opponentIdx];
@@ -89,23 +89,23 @@ public class Board {
         }
     }
 
-    public boolean isPlayersHouse(int player, int idx) {
+    /* package */ boolean isPlayersHouse(int player, int idx) {
         return player == 1 && idx >= southStartIdx && idx <= southStartIdx + houses - 1
                 || player == 2 && idx >= northStartIdx && idx <= northStartIdx + houses - 1;
     }
 
-    public int playerStoreIdx(int player) {
+    /* package */ int playerStoreIdx(int player) {
         return player == 1 ? southStoreIdx : northStoreIdx;
     }
 
-    public int opponentIdx(int idx) {
+    /* package */ int opponentIdx(int idx) {
         if (idx == northStoreIdx) { return southStoreIdx; }
         else if (idx == southStoreIdx) { return northStoreIdx; }
 
         return (idx - (houses * 2)) * -1;
     }
 
-    public int seeds(int idx) {
+    /* package */ int seeds(int idx) {
         return board[idx];
     }
 

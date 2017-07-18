@@ -20,23 +20,25 @@ public class Engine {
     }
 
     public void play(int player, int house) {
+        //TODO: Check game over
         checkPlayersTurn(player);
 
         int lastIdx = board.move(player, house);
-
         if (captureConditions(player, lastIdx)) {
             board.capture(player, lastIdx);
         }
+
 
         // Check end of game
         // Count all remaining seeds in score
 
         if (lastIdx != board.playerStoreIdx(player)) {
-            //TODO: Add some sort of loggin maybe?
+            //TODO: Add some sort of login maybe?
             togglePlayersTurn();
         }
     }
 
+    //TODO: Maybe log number of moves
     public int score(int player) {
         return board.seeds(board.playerStoreIdx(player));
     }
