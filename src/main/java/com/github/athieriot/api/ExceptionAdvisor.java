@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
@@ -14,6 +15,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.ResponseEntity.*;
 
+@ApiIgnore
 @ControllerAdvice
 public class ExceptionAdvisor {
 
