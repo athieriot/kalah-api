@@ -4,6 +4,8 @@
 
 API service to play Kalah game
 
+Have a play online: [https://kalah-api.herokuapp.com/swagger-ui.html]()
+
 ## Build
 
     mvn clean install
@@ -15,9 +17,12 @@ API service to play Kalah game
     mvn clean spring-boot:run
 
 OR
+
     docker run -d -p 8080:8080 --name kalah-api kalah-api
 
 ## Deploy
+
+    git push heroku master
 
 ## Usage
 
