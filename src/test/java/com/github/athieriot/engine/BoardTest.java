@@ -149,4 +149,11 @@ public class BoardTest {
         assertThat(board.seendsIn(board.playerStoreIdx(1))).isEqualTo(36);
         assertThat(board.seedsLeftFor(1)).isEqualTo(0);
     }
+
+    @Test
+    public void test_invalid_board_parameters() {
+        assertThatThrownBy(() -> new Board(-1, -2))
+                .isInstanceOf(InvalidParameterException.class)
+                .hasMessage("Board parameters can't be negative");
+    }
 }

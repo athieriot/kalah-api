@@ -33,7 +33,6 @@ public class Engine {
         this(6, 6);
     }
 
-    //TODO: Check for negative numbers
     public Engine(int houses, int seeds) {
         this(houses, seeds, new SecureRandom().nextInt(2) + 1);
     }

@@ -23,6 +23,8 @@ public class Board {
     private final int[] board;
 
     /* package */ Board(int houses, int seeds) {
+        if (houses < 0 || seeds < 0) { throw new InvalidParameterException("Board parameters can't be negative"); }
+
         this.houses = houses;
         this.seeds = seeds;
         this.board = new int[(houses * 2) + 2];
