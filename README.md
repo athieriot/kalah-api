@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/athieriot/kalah-api.svg?branch=master)](https://travis-ci.org/athieriot/kalah-api)
+[![Build Status](https://travis-ci.org/athieriot/kalah-api.svg?branch=master)](https://travis-ci.org/athieriot/kalah-api) [![Coverage Status](https://coveralls.io/repos/github/athieriot/kalah-api/badge.svg?branch=master)](https://coveralls.io/github/athieriot/kalah-api?branch=master)
 
 # Kalah API
 
