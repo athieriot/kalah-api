@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/athieriot/kalah-api.svg?branch=master)](https://travis-ci.org/athieriot/kalah-api)
+
 # Kalah API
 
 API service to play Kalah game
@@ -75,8 +77,8 @@ The board is a list of 14 integer and are meant to be represented like so:
 ```
    <--- North
 12 11 10  9  8  7
-13                      6
- 0  1    2    3  4  5
+13              6
+ 0  1  2  3  4  5
    South --->
 ```
 
