@@ -4,6 +4,8 @@ import com.github.athieriot.engine.Engine;
 import com.github.athieriot.exception.GameOverException;
 import com.github.athieriot.exception.IllegalMoveException;
 import com.github.athieriot.repository.EngineRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,6 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.ResponseEntity.*;
 
-//TODO: Swagger
 @RestController
 @RequestMapping("/game")
 public class GameController {
@@ -31,6 +32,7 @@ public class GameController {
     }
 
     @PostMapping
+    @ApiOperation("Create a new game of Kalah")
     public ResponseEntity<Engine> newGame() {
         Engine engine = new Engine(6, 6);
 
@@ -40,11 +42,13 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation("Retrieve details of a game")
     public Engine game(@PathVariable UUID id) {
         return engines.find(id);
     }
 
     @PostMapping("/{id}/play/{player}/{house}")
+    @ApiOperation("Make a move")
     public Engine play(@PathVariable UUID id,
                        @PathVariable int player,
                        @PathVariable int house
