@@ -26,6 +26,7 @@
 		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
 		<springfox-swagger2.version>2.7.0</springfox-swagger2.version>
 		<springfox-swagger-ui.version>2.2.2</springfox-swagger-ui.version>
+		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -110,6 +111,12 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>${coveralls-maven-plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
