@@ -36,22 +36,17 @@ public class Board {
         fill(board, southStartIdx, southStartIdx + houses, seeds);
     }
 
-    //TODO: Does it worth removing "player" mention in the board for "zone" (North/South)?
     /* package */ int move(int player, int houseNbr) {
         int houseIdx = fromHouseNbrToIdx(player, houseNbr);
 
         checkLegalMoves(houseNbr, houseIdx);
         pickSeeds(houseIdx);
 
-        int startIdx = houseIdx + 1;
-        int lastIdx = startIdx;
+        return sowSeedsInHand(player, houseIdx);
+    }
 
-        while (hand > 0) {
-            lastIdx = sowSeedsFrom(player, startIdx);
-            startIdx = 0;
-        }
-
-        return lastIdx;
+    private int fromHouseNbrToIdx(int player, int houseNbr) {
+        return player == 1 ? houseNbr - 1 : houseNbr + houses;
     }
 
     private void checkLegalMoves(int houseNbr, int houseIdx) {
@@ -59,15 +54,22 @@ public class Board {
         else if (board[houseIdx] == 0) { throw new IllegalMoveException("Empty house. Not a valid move"); }
     }
 
-    private int fromHouseNbrToIdx(int player, int houseNbr) {
-        return player == 1 ? houseNbr - 1 : houseNbr + houses;
-    }
-
     private void pickSeeds(int house) {
         synchronized (board) {
             hand = board[house];
             board[house] = 0;
         }
+    }
+
+    private int sowSeedsInHand(int player, int houseIdx) {
+        int startIdx = houseIdx + 1;
+        int lastIdx = startIdx;
+
+        while (hand > 0) {
+            lastIdx = sowSeedsFrom(player, startIdx);
+            startIdx = 0;
+        }
+        return lastIdx;
     }
 
     private int sowSeedsFrom(int player, int startIdx) {
@@ -85,13 +87,13 @@ public class Board {
     }
 
     /* package */ void capture(int player, int idx) {
-        int opponentIdx = opponentIdx(idx);
+        int oppositeIdx = oppositeIdx(idx);
         int playerStoreIdx = playerStoreIdx(player);
-        int treasure = board[idx] + board[opponentIdx];
+        int treasure = board[idx] + board[oppositeIdx];
 
         synchronized (board) {
             board[idx] = 0;
-            board[opponentIdx] = 0;
+            board[oppositeIdx] = 0;
             board[playerStoreIdx] = board[playerStoreIdx] + treasure;
         }
     }
@@ -99,7 +101,7 @@ public class Board {
     /* package */ void collectSeeds(int player) {
         board[playerStoreIdx(player)] = board[playerStoreIdx(player)] + seedsLeftFor(player);
 
-        streamOf(player).forEach(i -> board[i] = 0);
+        streamHousesOf(player).forEach(i -> board[i] = 0);
     }
 
     /* package */ boolean isPlayersHouse(int player, int idx) {
@@ -108,33 +110,33 @@ public class Board {
     }
 
     /* package */ int seedsLeftFor(int player) {
-        return streamOf(player).map(i -> board[i]).sum();
+        return streamHousesOf(player).map(i -> board[i]).sum();
     }
 
     /* package */ int playerStoreIdx(int player) {
         return player == 1 ? southStoreIdx : northStoreIdx;
     }
 
-    /* package */ int opponentIdx(int idx) {
+    /* package */ int oppositeIdx(int idx) {
         if (idx == northStoreIdx) { return southStoreIdx; }
         else if (idx == southStoreIdx) { return northStoreIdx; }
 
         return (idx - (houses * 2)) * -1;
     }
 
-    /* package */ int seeds(int idx) {
+    /* package */ int seendsIn(int idx) {
         return board[idx];
     }
 
-    private IntStream streamOf(int player) {
+    /* package */ int[] toArray() {
+        return board;
+    }
+
+    private IntStream streamHousesOf(int player) {
         int start = player == 1 ? southStartIdx : northStartIdx;
         int end = start + houses;
 
         return range(start, end);
-    }
-
-    public int[] list() {
-        return board;
     }
 
     @Override
@@ -145,7 +147,6 @@ public class Board {
             builder.append(board[i]).append("\t");
         }
         builder.append("\n\r");
-
         builder.append(board[northStoreIdx]).append("\t");
 
         for (int i = 1; i < houses - 1; i++) {

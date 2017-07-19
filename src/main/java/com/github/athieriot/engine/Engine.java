@@ -45,7 +45,7 @@ public class Engine {
 
     @JsonProperty
     public int[] board() {
-        return board.list();
+        return board.toArray();
     }
 
     @JsonProperty
@@ -63,10 +63,6 @@ public class Engine {
             put(1, score(1));
             put(2, score(2));
         }};
-    }
-
-    public void play(int player, int... houses) {
-        stream(houses).forEach(h -> play(player, h));
     }
 
     //TODO: Add Javadoc
@@ -90,9 +86,12 @@ public class Engine {
         }
     }
 
-    //TODO: Maybe log number of moves
+    /* package */ void play(int player, int... houses) {
+        stream(houses).forEach(h -> play(player, h));
+    }
+
     public int score(int player) {
-        return board.seeds(board.playerStoreIdx(player));
+        return board.seendsIn(board.playerStoreIdx(player));
     }
 
     @JsonProperty
@@ -118,10 +117,10 @@ public class Engine {
     }
 
     private boolean captureConditions(int player, int idx) {
-        int opponentIdx = board.opponentIdx(idx);
+        int opponentIdx = board.oppositeIdx(idx);
 
         return board.isPlayersHouse(player, idx)
-                && board.seeds(idx) == 1
-                && board.seeds(opponentIdx) > 0;
+                && board.seendsIn(idx) == 1
+                && board.seendsIn(opponentIdx) > 0;
     }
 }

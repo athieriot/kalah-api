@@ -4,7 +4,7 @@
 
 API service to play Kalah game
 
-Have a play online: [https://kalah-api.herokuapp.com/swagger-ui.html]()
+Have a play online: [https://kalah-api.herokuapp.com](https://kalah-api.herokuapp.com)
 
 ## Build
 
@@ -26,15 +26,13 @@ OR
 
 ## Usage
 
-Documentation URL: [http://localhost:8080/swagger-ui.html]()
+Documentation URL: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 ### Start a new game
 
 This will create a new Kalah(6, 6) game and pick a first player randomly 
 
-    curl -X POST \
-        --header "Content-Type: application/json" \
-        "http://localhost:8080/game" | jq
+    curl -X POST "http://localhost:8080/game" | jq
     
 ```
 {
@@ -54,9 +52,7 @@ It's player's 2 turn so he starts and chose to sow the fifth house of his zone.
  
 See the last part of the path: `/play/2/5`. It's for player 2, house 5 (Choice from 1 to 6)
 
-    curl -X POST \
-        --header "Content-Type: application/json" \
-        "http://localhost:8080/game/77903be2-dfbb-4550-94d2-2526fc71fbc6/play/2/5"
+    curl -X POST "http://localhost:8080/game/77903be2-dfbb-4550-94d2-2526fc71fbc6/play/2/5"
     
 ```
 {

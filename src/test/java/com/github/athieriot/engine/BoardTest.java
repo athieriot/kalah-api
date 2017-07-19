@@ -101,7 +101,7 @@ public class BoardTest {
 
         board.capture(1, lastIdx);
 
-        assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(9);
+        assertThat(board.seendsIn(board.playerStoreIdx(1))).isEqualTo(9);
         assertThat(board.toString()).isEqualTo(
                 "6\t0\t5\t6\t0\t0\t\n\r" +
                 "2\t \t \t \t \t9\n\r" +
@@ -112,11 +112,11 @@ public class BoardTest {
     public void test_opponent_idx() {
         Board board = new Board(6, 6);
 
-        assertThat(board.opponentIdx(0)).isEqualTo(12);
-        assertThat(board.opponentIdx(5)).isEqualTo(7);
-        assertThat(board.opponentIdx(3)).isEqualTo(9);
-        assertThat(board.opponentIdx(6)).isEqualTo(13);
-        assertThat(board.opponentIdx(13)).isEqualTo(6);
+        assertThat(board.oppositeIdx(0)).isEqualTo(12);
+        assertThat(board.oppositeIdx(5)).isEqualTo(7);
+        assertThat(board.oppositeIdx(3)).isEqualTo(9);
+        assertThat(board.oppositeIdx(6)).isEqualTo(13);
+        assertThat(board.oppositeIdx(13)).isEqualTo(6);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BoardTest {
         board.move(1, 1);
         board.move(1, 3);
 
-        assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(2);
+        assertThat(board.seendsIn(board.playerStoreIdx(1))).isEqualTo(2);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class BoardTest {
 
         board.collectSeeds(1);
 
-        assertThat(board.seeds(board.playerStoreIdx(1))).isEqualTo(36);
+        assertThat(board.seendsIn(board.playerStoreIdx(1))).isEqualTo(36);
         assertThat(board.seedsLeftFor(1)).isEqualTo(0);
     }
 }

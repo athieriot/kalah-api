@@ -1,16 +1,13 @@
 package com.github.athieriot.repository;
 
 import com.github.athieriot.engine.Engine;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
 
 public class EngineRepositoryTest {
 

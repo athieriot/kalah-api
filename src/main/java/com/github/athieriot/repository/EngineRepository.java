@@ -2,7 +2,6 @@ package com.github.athieriot.repository;
 
 import com.github.athieriot.engine.Engine;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
