@@ -52,6 +52,15 @@ public class GameControllerTest {
     }
 
     @Test
+    public void test_new_game_with_params() throws Exception {
+        mvc.perform(post("/game").param("houses", "4"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.board", hasSize(10)));
+
+        verify(mockEngines, times(1)).store(any(Engine.class));
+    }
+
+    @Test
     public void test_retrieve_game_not_found() throws Exception {
         given(mockEngines.find(any(UUID.class))).willThrow(new NoSuchElementException());
 

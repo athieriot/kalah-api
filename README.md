@@ -46,6 +46,10 @@ This will create a new Kalah(6, 6) game and pick a first player randomly
     "2": 0
   } 
 ```
+
+You can also create a Kalah(6, 4) game 
+
+    curl -X POST "http://localhost:8080/game?seeds=4" | jq
     
 ### Make a move
      

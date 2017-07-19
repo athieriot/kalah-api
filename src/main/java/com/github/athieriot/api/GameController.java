@@ -28,11 +28,13 @@ public class GameController {
     @PostMapping
     @ApiOperation(
             value = "Create a new game of Kalah",
-            notes = "This will create a new Kalah(6, 6) game and pick a first player randomly"
+            notes = "This will create a new Kalah game (Default: 6, 6) and pick a first player randomly"
     )
-    //TODO: Allow to configure the game. Ex: Start Kalah(6,4) instead of Kalah(6, 6)
-    public ResponseEntity<Engine> newGame() {
-        Engine engine = new Engine(6, 6);
+    public ResponseEntity<Engine> newGame(
+            @RequestParam(value = "houses", defaultValue = "6") int houses,
+            @RequestParam(value = "seeds",  defaultValue = "6") int seeds
+    ) {
+        Engine engine = new Engine(houses, seeds);
 
         engines.store(engine);
 
@@ -65,7 +67,7 @@ public class GameController {
                     "- 13 is the Player 2 score<br>" +
                     "- The South zone is from 0 to 5<br>" +
                     "- The North zone from 7 to 12")
-    //TODO: Return individual board steps instead?
+    //TODO: Return individual board steps as well?
     public Engine play(@PathVariable UUID id,
                        @PathVariable int player,
                        @PathVariable int house
