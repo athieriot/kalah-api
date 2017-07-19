@@ -51,6 +51,30 @@ public class EngineTest {
     }
 
     @Test
+    public void test_play_and_record_history() {
+        Engine engine = new Engine(6,6, 1);
+        assertThat(engine.history()).isEmpty();
+
+        engine.play(1, 1);
+        assertThat(engine.history()).containsExactly(
+                new int[] { 1, 1, 1 }
+        );
+
+        engine.play(1, 5);
+        assertThat(engine.history()).containsExactly(
+                new int[] { 1, 1, 1 },
+                new int[] { 2, 1, 5 }
+        );
+
+        engine.play(2, 2);
+        assertThat(engine.history()).containsExactly(
+                new int[] { 1, 1, 1 },
+                new int[] { 2, 1, 5 },
+                new int[] { 3, 2, 2 }
+        );
+    }
+
+    @Test
     public void test_capture_scenario() {
         Engine engine = new Engine(6, 4, 1);
 

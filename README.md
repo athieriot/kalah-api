@@ -40,6 +40,7 @@ This will create a new Kalah(6, 6) game and pick a first player randomly
   "board": [6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0],
   "playerTurn": 2,
   "gameOver": false,
+  "history": [],
   "scores": {
     "1": 0,
     "2": 0
@@ -60,6 +61,9 @@ See the last part of the path: `/play/2/5`. It's for player 2, house 5 (Choice f
   "board": [7, 7, 7, 7, 6, 6, 0, 6, 6, 6, 6, 0, 7, 1],
   "playerTurn": 1,
   "gameOver": false,
+  "history": [
+    [1, 2, 5]
+  ],
   "scores": {
     "1": 0,
     "2": 1

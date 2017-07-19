@@ -7,7 +7,9 @@ import com.github.athieriot.exception.IllegalMoveException;
 
 import java.security.InvalidParameterException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -24,6 +26,8 @@ public class Engine {
     private int playerTurn;
 
     private boolean gameOver = false;
+
+    private List<int[]> history = new ArrayList<>();
 
     public Engine() {
         this(6, 6);
@@ -58,6 +62,9 @@ public class Engine {
     }
 
     @JsonProperty
+    public List<int[]> history() { return history; }
+
+    @JsonProperty
     public HashMap<Integer, Integer> scores() {
         return new HashMap<Integer, Integer>() {{
             put(1, score(1));
@@ -66,11 +73,12 @@ public class Engine {
     }
 
     //TODO: Add Javadoc
-    //TODO: Record individual steps?
     public void play(int player, int house) {
         checkValidPlay(player);
 
         int lastIdx = board.move(player, house);
+        record(player, house);
+
         if (captureConditions(player, lastIdx)) {
             board.capture(player, lastIdx);
         }
@@ -106,6 +114,10 @@ public class Engine {
         if (gameOver) { throw new GameOverException("The Game is over !"); }
         else if (player < 1 || player > 2) {  throw new InvalidParameterException("This is 2 players game only"); }
         else if (player != playerTurn) { throw new IllegalMoveException("Not your turn yet"); }
+    }
+
+    private void record(int player, int house) {
+        history.add(new int[] { history.size() + 1, player, house });
     }
 
     private void togglePlayersTurn() {

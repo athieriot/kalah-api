@@ -45,7 +45,8 @@ public class GameControllerTest {
                 .andExpect(jsonPath("$.board", hasSize(14)))
                 .andExpect(jsonPath("$.gameOver", is(false)))
                 .andExpect(jsonPath("$.scores.1", is(0)))
-                .andExpect(jsonPath("$.scores.2", is(0)));
+                .andExpect(jsonPath("$.scores.2", is(0)))
+                .andExpect(jsonPath("$.history", empty()));
 
         verify(mockEngines, times(1)).store(any(Engine.class));
     }
@@ -70,7 +71,8 @@ public class GameControllerTest {
                 .andExpect(jsonPath("$.board", hasSize(14)))
                 .andExpect(jsonPath("$.gameOver", is(engine.isGameOver())))
                 .andExpect(jsonPath("$.scores.1", is(engine.score(1))))
-                .andExpect(jsonPath("$.scores.2", is(engine.score(2))));
+                .andExpect(jsonPath("$.scores.2", is(engine.score(2))))
+                .andExpect(jsonPath("$.history", empty()));
     }
 
     @Test
@@ -101,6 +103,7 @@ public class GameControllerTest {
         int firstPlayer = engine.playerTurn();
         mvc.perform(post("/game/" + UUID.randomUUID() + "/play/" + engine.playerTurn() + "/5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.playerTurn", is(firstPlayer == 1 ? 2 : 1)));
+                .andExpect(jsonPath("$.playerTurn", is(firstPlayer == 1 ? 2 : 1)))
+                .andExpect(jsonPath("$.history", hasSize(1)));
     }
 }

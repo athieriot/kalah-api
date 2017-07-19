@@ -65,6 +65,7 @@ public class GameController {
                     "- 13 is the Player 2 score<br>" +
                     "- The South zone is from 0 to 5<br>" +
                     "- The North zone from 7 to 12")
+    //TODO: Return individual board steps instead?
     public Engine play(@PathVariable UUID id,
                        @PathVariable int player,
                        @PathVariable int house
