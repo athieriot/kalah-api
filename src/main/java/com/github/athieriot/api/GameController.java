@@ -5,9 +5,11 @@ import com.github.athieriot.exception.GameOverException;
 import com.github.athieriot.exception.IllegalMoveException;
 import com.github.athieriot.repository.EngineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -16,7 +18,6 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.ResponseEntity.*;
 
-//TODO: Tests
 //TODO: Swagger
 @RestController
 @RequestMapping("/game")
@@ -30,12 +31,12 @@ public class GameController {
     }
 
     @PostMapping
-    public Engine newGame() {
+    public ResponseEntity<Engine> newGame() {
         Engine engine = new Engine(6, 6);
 
         engines.store(engine);
 
-        return engine;
+        return created(URI.create("/game/" + engine.id())).body(engine);
     }
 
     @GetMapping("/{id}")

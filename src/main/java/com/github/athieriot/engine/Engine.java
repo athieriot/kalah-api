@@ -1,17 +1,20 @@
 package com.github.athieriot.engine;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.athieriot.exception.IllegalMoveException;
 import com.github.athieriot.exception.GameOverException;
+import com.github.athieriot.exception.IllegalMoveException;
 
 import java.security.InvalidParameterException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Arrays.stream;
 
 //TODO: Implement the Pie Rule?
+@JsonInclude(NON_NULL)
 public class Engine {
 
     private final UUID id = UUID.randomUUID();
