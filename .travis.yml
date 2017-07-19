@@ -1,0 +1,3 @@
+language: java
+
+script: mvn -B clean install coveralls:report
