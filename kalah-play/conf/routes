@@ -1,0 +1,11 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+POST    /game                           controllers.GameController.newGame(houses: Int ?= 6, seeds: Int ?= 6)
+GET     /game/:id                       controllers.GameController.game(id: java.util.UUID)
+#POST    /game/:id/play/:player/:house   controllers.GameController.play(id: java.util.UUID, player: Int, house: Int)
+
+# Map static resources from the /public folder to the /assets URL path
+#GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
