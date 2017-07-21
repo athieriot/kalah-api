@@ -1,28 +1,40 @@
 package com.github.athieriot.api;
 
 import com.github.athieriot.engine.Engine;
-import com.github.athieriot.repository.EngineRepository;
+import com.github.athieriot.registry.ProcessorRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.BDDMockito.given;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isOneOf;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //TODO: Missing end game testing
 @RunWith(SpringRunner.class)
@@ -32,8 +44,8 @@ public class GameControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private EngineRepository mockEngines;
+    @SpyBean
+    private ProcessorRegistry registry;
 
     @Test
     public void test_new_game() throws Exception {
@@ -48,7 +60,7 @@ public class GameControllerTest {
                 .andExpect(jsonPath("$.scores.2", is(0)))
                 .andExpect(jsonPath("$.history", empty()));
 
-        verify(mockEngines, times(1)).store(any(Engine.class));
+        verify(registry, times(1)).spawnGameProcessorFor(any(Engine.class));
     }
 
     @Test
@@ -57,23 +69,33 @@ public class GameControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.board", hasSize(10)));
 
-        verify(mockEngines, times(1)).store(any(Engine.class));
+        verify(registry, times(1)).spawnGameProcessorFor(any(Engine.class));
     }
 
     @Test
     public void test_retrieve_game_not_found() throws Exception {
-        given(mockEngines.find(any(UUID.class))).willThrow(new NoSuchElementException());
+        CompletableFuture<Engine> failed = new CompletableFuture<>();
+        failed.completeExceptionally(new NoSuchElementException());
+        doReturn(failed).when(registry).stateOf(any(UUID.class));
 
-        mvc.perform(get("/game/" + UUID.randomUUID()))
+        MvcResult asyncRequest = mvc.perform(get("/game/" + UUID.randomUUID()))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(asyncRequest))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void test_retrieve_existing_game() throws Exception {
         Engine engine = new Engine();
-        given(mockEngines.find(any(UUID.class))).willReturn(engine);
+        doReturn(completedFuture(engine)).when(registry).stateOf(any(UUID.class));
 
-        mvc.perform(get("/game/" + UUID.randomUUID()))
+        MvcResult asyncRequest = mvc.perform(get("/game/" + UUID.randomUUID()))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(asyncRequest))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(engine.id().toString())))
                 .andExpect(jsonPath("$.playerTurn", is(engine.playerTurn())))
@@ -87,9 +109,13 @@ public class GameControllerTest {
     @Test
     public void test_play_invalid_parameter() throws Exception {
         Engine engine = new Engine();
-        given(mockEngines.find(any(UUID.class))).willReturn(engine);
+        registry.spawnGameProcessorFor(engine);
 
-        mvc.perform(post("/game/" + UUID.randomUUID() + "/play/25/5"))
+        MvcResult asyncRequest = mvc.perform(post("/game/" + engine.id() + "/play/25/5"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(asyncRequest))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("This is 2 players game only"));
     }
@@ -97,9 +123,13 @@ public class GameControllerTest {
     @Test
     public void test_play_invalid_move() throws Exception {
         Engine engine = new Engine();
-        given(mockEngines.find(any(UUID.class))).willReturn(engine);
+        registry.spawnGameProcessorFor(engine);
 
-        mvc.perform(post("/game/" + UUID.randomUUID() + "/play/" + (engine.playerTurn() == 1 ? 2 : 1) + "/5"))
+        MvcResult asyncRequest = mvc.perform(post("/game/" + engine.id() + "/play/" + (engine.playerTurn() == 1 ? 2 : 1) + "/5"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(asyncRequest))
                 .andExpect(status().isForbidden())
                 .andExpect(content().string("Not your turn yet"));
     }
@@ -107,12 +137,17 @@ public class GameControllerTest {
     @Test
     public void test_play() throws Exception {
         Engine engine = new Engine();
-        given(mockEngines.find(any(UUID.class))).willReturn(engine);
+        registry.spawnGameProcessorFor(engine);
 
         int firstPlayer = engine.playerTurn();
-        mvc.perform(post("/game/" + UUID.randomUUID() + "/play/" + engine.playerTurn() + "/5"))
+        MvcResult asyncRequest = mvc.perform(post("/game/" + engine.id().toString() + "/play/" + engine.playerTurn() + "/5"))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(asyncRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.playerTurn", is(firstPlayer == 1 ? 2 : 1)))
-                .andExpect(jsonPath("$.history", hasSize(1)));
+               .andExpect(jsonPath("$.playerTurn", is(firstPlayer == 1 ? 2 : 1)))
+               .andExpect(jsonPath("$.history", hasSize(1)));
+
     }
 }

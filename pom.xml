@@ -27,12 +27,18 @@
 		<springfox-swagger2.version>2.7.0</springfox-swagger2.version>
 		<springfox-swagger-ui.version>2.2.2</springfox-swagger-ui.version>
 		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+		<akka_2.12.version>2.5.3</akka_2.12.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-actor_2.12</artifactId>
+			<version>${akka_2.12.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -63,9 +69,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
-			<version>RELEASE</version>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-testkit_2.12</artifactId>
+			<version>${akka_2.12.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

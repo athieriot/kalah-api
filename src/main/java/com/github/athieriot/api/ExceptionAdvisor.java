@@ -12,7 +12,9 @@ import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.ResponseEntity.*;
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.status;
 
 @ApiIgnore
 @ControllerAdvice

@@ -6,6 +6,11 @@ API service to play Kalah game
 
 Have a play online: [https://kalah-api.herokuapp.com](https://kalah-api.herokuapp.com)
 
+Implementation        | Git tag
+--------------------- | -----------
+Simple Spring Boot    | spring-boot
+Spring Boot and Akka  | akka
+
 ## Build
 
     mvn clean install
@@ -98,3 +103,10 @@ Where:
 - 13 is the Player 2 score
 - The South zone is from 0 to 5
 - The North zone from 7 to 12
+
+## What next?
+
+- Going fully reactive? (Using Play or Lagom)
+- Adding different game flavours (Empty Capture, Pie Rule)
+- Front End (Phaser.js or a command line tool)
+- AI 
