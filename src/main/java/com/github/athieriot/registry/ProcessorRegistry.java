@@ -1,6 +1,5 @@
 package com.github.athieriot.registry;
 
-import akka.actor.ActorNotFound;
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
@@ -9,7 +8,6 @@ import com.github.athieriot.engine.GameProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -59,15 +57,6 @@ public class ProcessorRegistry {
 
     private CompletableFuture<ActorRef> resolveActor(ActorSelection selection) {
         return selection.resolveOneCS(apply(2, SECONDS))
-                .toCompletableFuture()
-                .exceptionally(this::convertActorNotFound);
-    }
-
-    private ActorRef convertActorNotFound(Throwable e) {
-        if (e instanceof ActorNotFound) {
-            throw new NoSuchElementException();
-        }
-
-        throw new RuntimeException(e);
+                .toCompletableFuture();
     }
 }

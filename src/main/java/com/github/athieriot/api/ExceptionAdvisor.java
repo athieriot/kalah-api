@@ -1,5 +1,6 @@
 package com.github.athieriot.api;
 
+import akka.actor.ActorNotFound;
 import com.github.athieriot.exception.GameOverException;
 import com.github.athieriot.exception.IllegalMoveException;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.InvalidParameterException;
-import java.util.NoSuchElementException;
 
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -20,8 +20,8 @@ import static org.springframework.http.ResponseEntity.status;
 @ControllerAdvice
 public class ExceptionAdvisor {
 
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<String> handleIOException(NoSuchElementException ex) {
+    @ExceptionHandler(ActorNotFound.class)
+    public ResponseEntity<String> handleIOException(ActorNotFound ex) {
         return notFound().build();
     }
 

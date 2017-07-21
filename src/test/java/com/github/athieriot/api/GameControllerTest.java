@@ -1,5 +1,6 @@
 package com.github.athieriot.api;
 
+import akka.actor.ActorNotFound;
 import com.github.athieriot.engine.Engine;
 import com.github.athieriot.registry.ProcessorRegistry;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -75,7 +75,7 @@ public class GameControllerTest {
     @Test
     public void test_retrieve_game_not_found() throws Exception {
         CompletableFuture<Engine> failed = new CompletableFuture<>();
-        failed.completeExceptionally(new NoSuchElementException());
+        failed.completeExceptionally(new ActorNotFound(null));
         doReturn(failed).when(registry).stateOf(any(UUID.class));
 
         MvcResult asyncRequest = mvc.perform(get("/game/" + UUID.randomUUID()))

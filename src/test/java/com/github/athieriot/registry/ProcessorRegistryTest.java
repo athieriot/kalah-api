@@ -1,10 +1,10 @@
 package com.github.athieriot.registry;
 
+import akka.actor.ActorNotFound;
 import akka.actor.ActorSystem;
 import com.github.athieriot.engine.Engine;
 import org.junit.Test;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +30,7 @@ public class ProcessorRegistryTest {
         ProcessorRegistry repository = new ProcessorRegistry(system);
 
         repository.stateOf(UUID.randomUUID()).whenComplete((engineRes, throwable) -> {
-            assertThat(throwable).isInstanceOf(NoSuchElementException.class);
+            assertThat(throwable).isInstanceOf(ActorNotFound.class);
         });
     }
 }
