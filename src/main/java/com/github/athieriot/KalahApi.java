@@ -1,5 +1,6 @@
 package com.github.athieriot;
 
+import akka.actor.ActorSystem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,11 @@ public class KalahApi {
 	public static void main(String[] args) {
 		SpringApplication.run(KalahApi.class, args);
 	}
+
+	@Bean
+    public ActorSystem system() {
+        return ActorSystem.create("kalah");
+    }
 
 	@Bean
 	public Docket swaggerSpringMvcPlugin() {

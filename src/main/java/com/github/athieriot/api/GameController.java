@@ -1,15 +1,22 @@
 package com.github.athieriot.api;
 
 import com.github.athieriot.engine.Engine;
-import com.github.athieriot.repository.EngineRepository;
+import com.github.athieriot.registry.ProcessorRegistry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.net.URI;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static org.springframework.http.ResponseEntity.created;
 
@@ -18,11 +25,11 @@ import static org.springframework.http.ResponseEntity.created;
 @Api(value = "/game", description = "Kalah Game Operations")
 public class GameController {
 
-    private final EngineRepository engines;
+    private ProcessorRegistry registry;
 
     @Autowired
-    public GameController(EngineRepository engines) {
-        this.engines = engines;
+    public GameController(ProcessorRegistry registry) {
+        this.registry = registry;
     }
 
     @PostMapping
@@ -36,15 +43,22 @@ public class GameController {
     ) {
         Engine engine = new Engine(houses, seeds);
 
-        engines.store(engine);
+        registry.spawnGameProcessorFor(engine);
 
         return created(URI.create("/game/" + engine.id())).body(engine);
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Retrieve details of a game", notes = "Simply access game details")
-    public Engine game(@PathVariable UUID id) {
-        return engines.find(id);
+    public DeferredResult<Engine> game(@PathVariable UUID id) {
+        final DeferredResult<Engine> result = new DeferredResult<>();
+
+        CompletableFuture.supplyAsync(() -> id)
+                .thenCompose(uuid -> registry.stateOf(uuid))
+                .thenAccept(result::setResult)
+                .exceptionally(e -> { result.setErrorResult(e); return null; });
+
+        return result;
     }
 
     @PostMapping("/{id}/play/{player}/{house}")
@@ -67,16 +81,18 @@ public class GameController {
                     "- 13 is the Player 2 score<br>" +
                     "- The South zone is from 0 to 5<br>" +
                     "- The North zone from 7 to 12")
-    //TODO: Return individual board steps as well?
-    public Engine play(@PathVariable UUID id,
-                       @PathVariable int player,
-                       @PathVariable int house
+    //TODO: Return intermediate moves as well?
+    public DeferredResult<Engine> play(@PathVariable UUID id,
+                                       @PathVariable int player,
+                                       @PathVariable int house
     ) {
-        Engine engine = engines.find(id);
+        final DeferredResult<Engine> result = new DeferredResult<>();
 
-        engine.play(player, house);
-        engines.store(engine);
+        CompletableFuture.supplyAsync(() -> id)
+                .thenCompose(uuid -> registry.processPlayerAction(uuid, player, house))
+                .thenAccept(result::setResult)
+                .exceptionally(e -> { result.setErrorResult(e); return null; });
 
-        return engine;
+        return result;
     }
 }
