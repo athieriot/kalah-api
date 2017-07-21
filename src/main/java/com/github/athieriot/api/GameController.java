@@ -4,6 +4,8 @@ import com.github.athieriot.engine.Engine;
 import com.github.athieriot.registry.ProcessorRegistry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +39,10 @@ public class GameController {
             value = "Create a new game of Kalah",
             notes = "This will create a new Kalah game (Default: 6, 6) and pick a first player randomly"
     )
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "An issue has been found with an input"),
+            @ApiResponse(code = 201, message = "Created", response = Engine.class)
+    })
     public ResponseEntity<Engine> newGame(
             @RequestParam(value = "houses", defaultValue = "6") int houses,
             @RequestParam(value = "seeds",  defaultValue = "6") int seeds
@@ -50,6 +56,11 @@ public class GameController {
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Retrieve details of a game", notes = "Simply access game details")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "Game not found"),
+            @ApiResponse(code = 400, message = "An issue has been found with an input"),
+            @ApiResponse(code = 200, message = "Successful", response = Engine.class)
+    })
     public DeferredResult<Engine> game(@PathVariable UUID id) {
         final DeferredResult<Engine> result = new DeferredResult<>();
 
@@ -81,6 +92,13 @@ public class GameController {
                     "- 13 is the Player 2 score<br>" +
                     "- The South zone is from 0 to 5<br>" +
                     "- The North zone from 7 to 12")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "Game not found"),
+            @ApiResponse(code = 400, message = "An issue has been found with an input"),
+            @ApiResponse(code = 403, message = "Not a valid move"),
+            @ApiResponse(code = 409, message = "This Game is over"),
+            @ApiResponse(code = 200, message = "Successful", response = Engine.class)
+    })
     //TODO: Return intermediate moves as well?
     public DeferredResult<Engine> play(@PathVariable UUID id,
                                        @PathVariable int player,
